@@ -10,13 +10,25 @@ import GoogleSignIn
 import GoogleSignInSwift
 
 struct MainView: View {
+    @State private var user: GIDGoogleUser?
+    
     var body: some View {
         VStack {
-            GoogleSignInButton(
-                scheme: .dark, // Options: .light, .dark, .auto
-                style: .standard, // Options: .standard, .wide, .icon
-                state: .normal, // Options: .normal, .disabled
-                action: handleSignInButton).padding()
+            // Check if the user is signed in.
+            if let user = user {
+                 // If signed in, show a welcome message and the sign-out button.
+                Text("Hello, \(user.profile?.givenName ?? "User")!")
+                    .font(.title)
+                    .padding()
+                Button("Sign Out", action: signOut)
+                    .buttonStyle(.borderedProminent)
+            } else {
+                GoogleSignInButton(
+                    scheme: .dark, // Options: .light, .dark, .auto
+                    style: .standard, // Options: .standard, .wide, .icon
+                    state: .normal, // Options: .normal, .disabled
+                    action: handleSignInButton).padding()
+            }
         }
     }
     
@@ -40,9 +52,18 @@ struct MainView: View {
                 print("Errpr signing in: \(error?.localizedDescription ?? "No error description")")
                 return
             }
+            DispatchQueue.main.async {
+                self.user = result.user
+            }
             // If sign in succeeded, display the app's main content view.
             print("ID Token: \(result.user.idToken?.tokenString ?? "")")
         }
+    }
+    
+    func signOut() {
+        GIDSignIn.sharedInstance.signOut()
+        // After signing out, set the `user` state variable to `nil`.
+        self.user = nil
     }
 }
 
