@@ -30,6 +30,21 @@ struct MainView: View {
                     action: handleSignInButton).padding()
             }
         }
+        .onAppear {
+            // On appear, try to restore a previous sign-in.
+            GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+                // This closure is called when the restoration is complete.
+                if let user = user {
+                    // If a user was restored, update the `user` state variable.
+                    DispatchQueue.main.async {
+                        self.user = user
+                    }
+                    
+                    // Print the ID token to the console when restored.
+                    print("Restored ID Token: \(user.idToken?.tokenString ?? "")")
+                }
+            }
+        }
     }
     
     func handleSignInButton() {
