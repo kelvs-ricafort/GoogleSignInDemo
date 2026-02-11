@@ -12,7 +12,11 @@ import GoogleSignInSwift
 struct MainView: View {
     var body: some View {
         VStack {
-            GoogleSignInButton(action: handleSignInButton).padding()
+            GoogleSignInButton(
+                scheme: .dark, // Options: .light, .dark, .auto
+                style: .standard, // Options: .standard, .wide, .icon
+                state: .normal, // Options: .normal, .disabled
+                action: handleSignInButton).padding()
         }
     }
     
